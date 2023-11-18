@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "786991309098",
+    "project_id": "flutter-pig",
+    "storage_bucket": "flutter-pig.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786991309098:android:9b43ca39464a792a39fe53",
+        "android_client_info": {
+          "package_name": "com.example.scscpig"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKceb7aZbggyc27gaEYl-uuZAqJXMYMNU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
