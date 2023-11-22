@@ -9,6 +9,14 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 // HomePage Widget
+class HomePageWidget extends StatefulWidget {
+  const HomePageWidget(
+      {Key? key})
+      : super(key: key);
+  @override
+  _HomePageWidgetState createState() => _HomePageWidgetState();
+}
+
 class _HomePageWidgetState extends State<HomePageWidget> {
   late HomePageModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -225,11 +233,4 @@ final kFirstDay = DateTime(kToday.year, kToday.month - 3, kToday.day);
 final kLastDay = DateTime(kToday.year, kToday.month + 3, kToday.day);
 
 
-class HomePageWidget extends StatefulWidget {
-  const HomePageWidget(
-      {Key? key})
-      : super(key: key);
-  @override
-  _HomePageWidgetState createState() => _HomePageWidgetState();
-}
 
