@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import '/utils/model_utils.dart';
 
-class HomePageModel extends Model {
+class NavigationBarModel extends Model {
   final unFocusNode = FocusNode();
 
   @override
