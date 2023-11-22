@@ -2,94 +2,28 @@ import 'homepage_model.dart';
 export 'homepage_model.dart';
 
 import '/utils/model_utils.dart';
+import '/components/navigation_bar_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-
+// HomePage Widget
 class HomePageWidget extends StatefulWidget {
-  const HomePageWidget({super.key});
-
+  const HomePageWidget(
+      {Key? key})
+      : super(key: key);
   @override
-  State<HomePageWidget> createState() => _HomePageWidgetState();
+  _HomePageWidgetState createState() => _HomePageWidgetState();
 }
 
 class _HomePageWidgetState extends State<HomePageWidget> {
   late HomePageModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  @override
-  void initState() {
-    super.initState();
-    _model = createModel(context, () => HomePageModel());
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _model.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CalendarScreen(width: 100, height: 100);
-  }
-}
-
-
-Future<Map<DateTime, List<Event>>> returnEvents() async {
-  Map<DateTime, List<Event>> eventsMap = {
-    DateTime(2023, 11, 20): [
-      const Event('Event A0'),
-      const Event('Event B0'),
-      const Event('Event C0'),
-    ],
-  };
-
-  return eventsMap;
-}
-
-class Event {
-  final String title;
-  const Event(this.title);
-  @override
-  String toString() => title;
-}
-
-List<DateTime> daysInRange(DateTime first, DateTime last) {
-  final dayCount = last.difference(first).inDays + 1;
-  return List.generate(
-    dayCount,
-        (index) => DateTime.utc(first.year, first.month, first.day + index),
-  );
-}
-
-final kToday = DateTime.now();
-final kFirstDay = DateTime(kToday.year, kToday.month - 3, kToday.day);
-final kLastDay = DateTime(kToday.year, kToday.month + 3, kToday.day);
-
-class CalendarScreen extends StatefulWidget {
-  final double width;
-  final double height;
-  const CalendarScreen(
-      {Key? key,
-        required this.width,
-        required this.height,
-      })
-      : super(key: key);
-  @override
-  _CalendarScreenState createState() => _CalendarScreenState();
-}
-
-class _CalendarScreenState extends State<CalendarScreen> {
   late ValueNotifier<List<Event>> _selectedEvents = ValueNotifier([]);
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
-      .toggledOff; // Can be toggled on/off by longpressing a date
+  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime? _rangeStart;
@@ -99,7 +33,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeEvents().then((_) {
+    _model = createModel(context, () => HomePageModel());
+    _initializeEvents().then((value) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {});
     });
   }
@@ -116,6 +52,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void dispose() {
     _selectedEvents.dispose();
+    _model.dispose();
     super.dispose();
   }
 
@@ -179,75 +116,121 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Row(
         children: [
           Container(
-            color: Colors.white,
-            child: TableCalendar<Event>(
-              firstDay: kFirstDay,
-              lastDay: kLastDay,
-              focusedDay: _focusedDay,
-              availableCalendarFormats: {
-                CalendarFormat.month: '달',
-              },
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              rangeStartDay: _rangeStart,
-              rangeEndDay: _rangeEnd,
-              calendarFormat: _calendarFormat,
-              rangeSelectionMode: _rangeSelectionMode,
-              eventLoader: _getEventsForDay,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              calendarStyle: CalendarStyle(
-                outsideDaysVisible: false,
-              ),
-              onDaySelected: _onDaySelected,
-              onRangeSelected: _onRangeSelected,
-              onFormatChanged: (format) {
-                if (_calendarFormat != format) {
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                }
-              },
-              onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
-              },
-            ),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width * 0.2,
+            child: NavigationBarWidget(),
           ),
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              child: ValueListenableBuilder<List<Event>>(
-                valueListenable: _selectedEvents,
-                builder: (context, value, _) {
-                  return ListView.builder(
-                    itemCount: value.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 4.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child:  ListTile(
-                          onTap: () {
+          Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                color: Colors.white,
+                child: TableCalendar<Event>(
+                  firstDay: kFirstDay,
+                  lastDay: kLastDay,
+                  focusedDay: _focusedDay,
+                  availableCalendarFormats: {
+                    CalendarFormat.month: '달',
+                  },
+                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                  rangeStartDay: _rangeStart,
+                  rangeEndDay: _rangeEnd,
+                  calendarFormat: _calendarFormat,
+                  rangeSelectionMode: _rangeSelectionMode,
+                  eventLoader: _getEventsForDay,
+                  startingDayOfWeek: StartingDayOfWeek.monday,
+                  calendarStyle: CalendarStyle(
+                    outsideDaysVisible: false,
+                  ),
+                  onDaySelected: _onDaySelected,
+                  onRangeSelected: _onRangeSelected,
+                  onFormatChanged: (format) {
+                    if (_calendarFormat != format) {
+                      setState(() {
+                        _calendarFormat = format;
+                      });
+                    }
+                  },
+                  onPageChanged: (focusedDay) {
+                    _focusedDay = focusedDay;
+                  },
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  color: Colors.white,
+                  child: ValueListenableBuilder<List<Event>>(
+                    valueListenable: _selectedEvents,
+                    builder: (context, value, _) {
+                      return ListView.builder(
+                        itemCount: value.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                              vertical: 4.0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            child:  ListTile(
+                              onTap: () {
 
-                          },
-                          title: Text('${value[index]}'),
-                        ),
+                              },
+                              title: Text('${value[index]}'),
+                            ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
   }
 }
+
+// Events Class and Function
+Future<Map<DateTime, List<Event>>> returnEvents() async {
+  Map<DateTime, List<Event>> eventsMap = {
+    DateTime(2023, 11, 20): [
+      const Event('Event A0'),
+      const Event('Event B0'),
+      const Event('Event C0'),
+    ],
+  };
+  return eventsMap;
+}
+
+class Event {
+  final String title;
+  const Event(this.title);
+  @override
+  String toString() => title;
+}
+
+List<DateTime> daysInRange(DateTime first, DateTime last) {
+  final dayCount = last.difference(first).inDays + 1;
+  return List.generate(
+    dayCount,
+        (index) => DateTime.utc(first.year, first.month, first.day + index),
+  );
+}
+
+final kToday = DateTime.now();
+final kFirstDay = DateTime(kToday.year, kToday.month - 3, kToday.day);
+final kLastDay = DateTime(kToday.year, kToday.month + 3, kToday.day);
+
+
+
