@@ -2,6 +2,7 @@ import 'navigation_bar_model.dart';
 export 'navigation_bar_model.dart';
 
 import '/utils/model_utils.dart';
+import '/index.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +51,14 @@ class _NavigationBarWidgetState extends State<NavigationBarWidget> {
                 size: 20,
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomePageWidget(),
+                    ),
+                  );
+                },
                 child: const Text(
                   '달력 보기',
                   style: TextStyle(
@@ -74,7 +82,14 @@ class _NavigationBarWidgetState extends State<NavigationBarWidget> {
                 size: 20,
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReservationPageWidget(),
+                    ),
+                  );
+                },
                 child: const Text(
                   '예약하기',
                   style: TextStyle(
