@@ -34,51 +34,54 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width * 0.2,
-          child: const NavigationBarWidget(),
-        ),
-        Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width * 0.8,
-          padding: const EdgeInsets.all(10),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(
-                'User Info',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                'Email: ' + 'kis4495@gmail.com',
-                style: TextStyle(
-                  fontSize: 15,
-                ),
-              ),
-              Text(
-                'sign out',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.blue,
-                ),
-              ),
-              Text(
-                'Reservation List' + '-> from the data base',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+    return Scaffold(
+      body: Row(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width * 0.2,
+            child: const NavigationBarWidget(),
           ),
-        ),
-      ],
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width * 0.8,
+            padding: const EdgeInsets.all(10),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'User ID',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Email',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'sign out',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.blue,
+                  ),
+                ),
+                Text(
+                  'Reservation List',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
