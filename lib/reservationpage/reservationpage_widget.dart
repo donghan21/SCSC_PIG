@@ -10,9 +10,8 @@ import 'package:table_calendar/table_calendar.dart';
 
 // HomePage Widget
 class ReservationPageWidget extends StatefulWidget {
-  const ReservationPageWidget(
-      {Key? key})
-      : super(key: key);
+  const ReservationPageWidget({Key? key}) : super(key: key);
+
   @override
   _ReservationPageWidgetState createState() => _ReservationPageWidgetState();
 }

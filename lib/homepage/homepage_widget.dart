@@ -10,9 +10,8 @@ import 'package:table_calendar/table_calendar.dart';
 
 // HomePage Widget
 class HomePageWidget extends StatefulWidget {
-  const HomePageWidget(
-      {Key? key})
-      : super(key: key);
+  const HomePageWidget({Key? key}) : super(key: key);
+
   @override
   _HomePageWidgetState createState() => _HomePageWidgetState();
 }
@@ -44,7 +43,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     events2 = await returnEvents();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
-    if(_selectedEvents.value.isEmpty) {
+    if (_selectedEvents.value.isEmpty) {
       _selectedEvents.value.add(Event('해당 날짜에 예약내역이 없습니다'));
     }
   }
@@ -88,7 +87,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       });
 
       _selectedEvents.value = _getEventsForDay(selectedDay);
-      if(_selectedEvents.value.isEmpty) {
+      if (_selectedEvents.value.isEmpty) {
         _selectedEvents.value.add(Event('해당 날짜에 예약내역이 없습니다'));
       }
     }
@@ -180,10 +179,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(12.0),
                             ),
-                            child:  ListTile(
-                              onTap: () {
-
-                              },
+                            child: ListTile(
+                              onTap: () {},
                               title: Text('${value[index]}'),
                             ),
                           );
@@ -215,7 +212,9 @@ Future<Map<DateTime, List<Event>>> returnEvents() async {
 
 class Event {
   final String title;
+
   const Event(this.title);
+
   @override
   String toString() => title;
 }
@@ -224,13 +223,10 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
   final dayCount = last.difference(first).inDays + 1;
   return List.generate(
     dayCount,
-        (index) => DateTime.utc(first.year, first.month, first.day + index),
+    (index) => DateTime.utc(first.year, first.month, first.day + index),
   );
 }
 
 final kToday = DateTime.now();
 final kFirstDay = DateTime(kToday.year, kToday.month - 3, kToday.day);
 final kLastDay = DateTime(kToday.year, kToday.month + 3, kToday.day);
-
-
-

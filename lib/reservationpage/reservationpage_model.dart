@@ -8,13 +8,10 @@ class ReservationPageModel extends Model {
   final unFocusNode = FocusNode();
 
   @override
-  void initState(BuildContext context) {
-
-  }
+  void initState(BuildContext context) {}
 
   @override
   void dispose() {
     unFocusNode.dispose();
   }
-
 }
