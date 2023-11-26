@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'homepage_model.dart';
 export 'homepage_model.dart';
 
@@ -6,7 +8,7 @@ import '/utils/model_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({super.key});
@@ -40,7 +42,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   }
 }
 
-
 Future<Map<DateTime, List<Event>>> returnEvents() async {
   Map<DateTime, List<Event>> eventsMap = {
     DateTime(2023, 11, 20): [
@@ -64,7 +65,7 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
   final dayCount = last.difference(first).inDays + 1;
   return List.generate(
     dayCount,
-        (index) => DateTime.utc(first.year, first.month, first.day + index),
+    (index) => DateTime.utc(first.year, first.month, first.day + index),
   );
 }
 
@@ -75,12 +76,11 @@ final kLastDay = DateTime(kToday.year, kToday.month + 3, kToday.day);
 class CalendarScreen extends StatefulWidget {
   final double width;
   final double height;
-  const CalendarScreen(
-      {Key? key,
-        required this.width,
-        required this.height,
-      })
-      : super(key: key);
+  const CalendarScreen({
+    Key? key,
+    required this.width,
+    required this.height,
+  }) : super(key: key);
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
 }
@@ -108,7 +108,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     events2 = await returnEvents();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
-    if(_selectedEvents.value.isEmpty) {
+    if (_selectedEvents.value.isEmpty) {
       _selectedEvents.value.add(Event('해당 날짜에 예약내역이 없습니다'));
     }
   }
@@ -151,7 +151,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       });
 
       _selectedEvents.value = _getEventsForDay(selectedDay);
-      if(_selectedEvents.value.isEmpty) {
+      if (_selectedEvents.value.isEmpty) {
         _selectedEvents.value.add(Event('해당 날짜에 예약내역이 없습니다'));
       }
     }
@@ -233,10 +233,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           border: Border.all(),
                           borderRadius: BorderRadius.circular(12.0),
                         ),
-                        child:  ListTile(
-                          onTap: () {
-
-                          },
+                        child: ListTile(
+                          onTap: () {},
                           title: Text('${value[index]}'),
                         ),
                       );
@@ -246,6 +244,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
           ),
+          SizedBox(
+              height: MediaQuery.of(context).size.height * 0.1,
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: ElevatedButton(onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                
+                Navigator.pushReplacementNamed(context, '/');
+              }, child: const Text('로그아웃'))),
         ],
       ),
     );
