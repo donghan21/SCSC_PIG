@@ -19,6 +19,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
   late double H;
   late double W;
   bool signInResult = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -143,8 +144,14 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                 SizedBox(height: H * 0.1),
                 ElevatedButton(
                   onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
                     signInResult = await signIn();
-                    if(signInResult) {
+                    setState(() {
+                      isLoading = false;
+                    });
+                    if(signInResult) {                     
                       Navigator.pushReplacementNamed(context, '/homepage');
                     }
                   },
@@ -153,7 +160,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           MaterialStateProperty.all<Color>(Colors.blue),
                       minimumSize: MaterialStateProperty.all<Size>(
                           Size(W * 0.8, H * 0.07))),
-                  child: const Text(
+                  child: isLoading ? CircularProgressIndicator() : Text(
                     '로그인',
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
