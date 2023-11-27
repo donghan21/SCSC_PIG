@@ -1,3 +1,5 @@
+import 'package:scscpig/userinfo/userinfo_widget.dart';
+
 import 'navigation_bar_model.dart';
 export 'navigation_bar_model.dart';
 
@@ -39,7 +41,6 @@ class _NavigationBarWidgetState extends State<NavigationBarWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-
         // 달력 보기 버튼
         Padding(
           padding: const EdgeInsets.all(10),
@@ -113,7 +114,14 @@ class _NavigationBarWidgetState extends State<NavigationBarWidget> {
                 size: 20,
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UserInfoWidget(),
+                    ),
+                  );
+                },
                 child: const Text(
                   '내 정보',
                   style: TextStyle(

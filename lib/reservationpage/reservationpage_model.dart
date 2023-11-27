@@ -11,6 +11,7 @@ class ReservationPageModel extends Model {
   TextEditingController? reasonController;
 
   @override
+
   void initState(BuildContext context) {
   }
 
@@ -19,5 +20,4 @@ class ReservationPageModel extends Model {
     unFocusNode.dispose();
     reasonController?.dispose();
   }
-
 }
