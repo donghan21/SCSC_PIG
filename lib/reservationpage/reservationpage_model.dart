@@ -4,17 +4,20 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import '/utils/model_utils.dart';
 
-class HomePageModel extends Model {
+class ReservationPageModel extends Model {
   final unFocusNode = FocusNode();
 
-  @override
-  void initState(BuildContext context) {
+  DateTime? selectedDay = DateTime.now();
+  TextEditingController? reasonController;
 
+  @override
+
+  void initState(BuildContext context) {
   }
 
   @override
   void dispose() {
     unFocusNode.dispose();
+    reasonController?.dispose();
   }
-
 }
