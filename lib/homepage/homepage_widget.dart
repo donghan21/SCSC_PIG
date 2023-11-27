@@ -196,14 +196,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               ),
             ],
           ),
-          SizedBox(
-              height: MediaQuery.of(context).size.height * 0.1,
-              width: MediaQuery.of(context).size.width * 0.4,
-              child: ElevatedButton(onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                
-                Navigator.pushReplacementNamed(context, '/');
-              }, child: const Text('로그아웃'))),
         ],
       ),
     );
