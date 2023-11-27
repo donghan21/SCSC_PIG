@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import 'reservationpage_model.dart';
 export 'reservationpage_model.dart';
 
@@ -24,6 +26,9 @@ class _ReservationPageWidgetState extends State<ReservationPageWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => ReservationPageModel());
+
+    _model.reasonController ??= TextEditingController();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {});
     });
@@ -40,11 +45,107 @@ class _ReservationPageWidgetState extends State<ReservationPageWidget> {
     return Scaffold(
       body: Row(
         children: [
-          Container(
+          SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width * 0.2,
-            child: NavigationBarWidget(),
+            child: const NavigationBarWidget(),
           ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: ListView(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                      '날짜 선택',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 24,
+                        color: Color(0xFF000000),
+                        fontWeight: FontWeight.w700,
+                      ),
+                  ),
+                ),
+                const Divider(
+                  thickness: 1,
+                ),
+                CalendarDatePicker(
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 365)),
+                  onDateChanged: (date) {
+                    setState(() {
+                      _model.selectedDay = date;
+                    });
+                  },
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    '시간 선택',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 24,
+                      color: Color(0xFF000000),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const Divider(
+                  thickness: 1,
+                ),
+                CupertinoTimerPicker(
+                  mode: CupertinoTimerPickerMode.hm,
+                  onTimerDurationChanged: (duration) {
+                    setState(() {
+                      _model.selectedDay = DateTime(
+                          _model.selectedDay!.year,
+                          _model.selectedDay!.month,
+                          _model.selectedDay!.day,
+                          duration.inHours,
+                          duration.inMinutes % 60);
+                    });
+                  },
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    '사유 작성',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 24,
+                      color: Color(0xFF000000),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const Divider(
+                  thickness: 1,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: TextField(
+                    controller: _model.reasonController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '사유를 작성해주세요',
+                    ),
+                  ),
+                ),
+                const Divider(
+                  thickness: 1,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 10),
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    child: const Text('예약하기'),
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

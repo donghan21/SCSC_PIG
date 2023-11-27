@@ -57,7 +57,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   List<Event> _getEventsForDay(DateTime day) {
     List<Event> events = [];
-
     events2.forEach((key, value) {
       if (isSameDay(key, day)) {
         events.addAll(value);
