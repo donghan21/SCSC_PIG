@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'homepage_model.dart';
 export 'homepage_model.dart';
 
@@ -7,6 +9,7 @@ import '/components/navigation_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // HomePage Widget
 class HomePageWidget extends StatefulWidget {
@@ -19,6 +22,7 @@ class HomePageWidget extends StatefulWidget {
 class _HomePageWidgetState extends State<HomePageWidget> {
   late HomePageModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
 
   late ValueNotifier<List<Event>> _selectedEvents = ValueNotifier([]);
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -121,6 +125,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
             width: MediaQuery.of(context).size.width * 0.2,
             child: NavigationBarWidget(),
           ),
+
           Column(
             children: [
               Container(
@@ -191,6 +196,14 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               ),
             ],
           ),
+          SizedBox(
+              height: MediaQuery.of(context).size.height * 0.1,
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: ElevatedButton(onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                
+                Navigator.pushReplacementNamed(context, '/');
+              }, child: const Text('로그아웃'))),
         ],
       ),
     );
