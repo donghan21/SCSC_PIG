@@ -129,6 +129,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     }
   }
 
+  Future<void> _handleRefresh() async {
+    setState(() {
+      _initializeEvents();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -141,92 +147,95 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               child: NavigationBarWidget(),
             ),
     
-            Column(
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  color: Colors.white,
-                  child: TableCalendar<Event>(
-                    firstDay: kFirstDay,
-                    lastDay: kLastDay,
-                    focusedDay: _focusedDay,
-                    availableCalendarFormats: {
-                      CalendarFormat.month: '달',
-                    },
-                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                    rangeStartDay: _rangeStart,
-                    rangeEndDay: _rangeEnd,
-                    calendarFormat: _calendarFormat,
-                    rangeSelectionMode: _rangeSelectionMode,
-                    eventLoader: _getEventsForDay,
-                    startingDayOfWeek: StartingDayOfWeek.monday,
-                    calendarStyle: CalendarStyle(
-                      outsideDaysVisible: false,
-                    ),
-                    onDaySelected: _onDaySelected,
-                    onRangeSelected: _onRangeSelected,
-                    onFormatChanged: (format) {
-                      if (_calendarFormat != format) {
-                        setState(() {
-                          _calendarFormat = format;
-                        });
-                      }
-                    },
-                    onPageChanged: (focusedDay) {
-                      _focusedDay = focusedDay;
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.8,                    
+            RefreshIndicator(
+              onRefresh: _handleRefresh,
+              child: Column(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
                     color: Colors.white,
-                    child: ValueListenableBuilder<List<Event>>(
-                      valueListenable: _selectedEvents,
-                      builder: (context, value, _) {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: value.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 12.0,
-                                vertical: 4.0,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(),
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              // child: ListTile(                                
-                              //   onTap: () {},
-                              //   title: Text('${value[index]}'),
-                              // ),
-                              child: 
-                              value[index].content == '해당 날짜에 예약내역이 없습니다' ? ListTile(title: Text('해당 날짜에 예약내역이 없습니다')) :
-                              Column(
-                                children: [
-                                  ListTile(
-                                    onTap: () {},
-                                    title: Text('${value[index].name}'),
-                                    subtitle: Text(DateFormat('HH:mm').format(DateTime.parse(value[index].start!)) + ' ~ ' + DateFormat('HH:mm').format(DateTime.parse(value[index].end!))),
-                                    trailing: Text('${value[index].phoneNumber}'),
-                                  ),
-                                  ListTile(
-                                    onTap: () {},
-                                    title: Text('${value[index].content}'), 
-                                    subtitle: Text('사용인원 : ${value[index].number}'),                                 
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
+                    child: TableCalendar<Event>(
+                      firstDay: kFirstDay,
+                      lastDay: kLastDay,
+                      focusedDay: _focusedDay,
+                      availableCalendarFormats: {
+                        CalendarFormat.month: '달',
+                      },
+                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                      rangeStartDay: _rangeStart,
+                      rangeEndDay: _rangeEnd,
+                      calendarFormat: _calendarFormat,
+                      rangeSelectionMode: _rangeSelectionMode,
+                      eventLoader: _getEventsForDay,
+                      startingDayOfWeek: StartingDayOfWeek.monday,
+                      calendarStyle: CalendarStyle(
+                        outsideDaysVisible: false,
+                      ),
+                      onDaySelected: _onDaySelected,
+                      onRangeSelected: _onRangeSelected,
+                      onFormatChanged: (format) {
+                        if (_calendarFormat != format) {
+                          setState(() {
+                            _calendarFormat = format;
+                          });
+                        }
+                      },
+                      onPageChanged: (focusedDay) {
+                        _focusedDay = focusedDay;
                       },
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,                    
+                      color: Colors.white,
+                      child: ValueListenableBuilder<List<Event>>(
+                        valueListenable: _selectedEvents,
+                        builder: (context, value, _) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: value.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                  vertical: 4.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                // child: ListTile(                                
+                                //   onTap: () {},
+                                //   title: Text('${value[index]}'),
+                                // ),
+                                child: 
+                                value[index].content == '해당 날짜에 예약내역이 없습니다' ? ListTile(title: Text('해당 날짜에 예약내역이 없습니다')) :
+                                Column(
+                                  children: [
+                                    ListTile(
+                                      onTap: () {},
+                                      title: Text('${value[index].name}'),
+                                      subtitle: Text(DateFormat('HH:mm').format(DateTime.parse(value[index].start!)) + ' ~ ' + DateFormat('HH:mm').format(DateTime.parse(value[index].end!))),
+                                      trailing: Text('${value[index].phoneNumber}'),
+                                    ),
+                                    ListTile(
+                                      onTap: () {},
+                                      title: Text('${value[index].content}'), 
+                                      subtitle: Text('사용인원 : ${value[index].number}'),                                 
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
