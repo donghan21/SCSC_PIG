@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 // HomePage Widget
 class HomePageWidget extends StatefulWidget {
@@ -43,12 +45,24 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     });
   }
 
+  // Future<void> _fetchReservations() async {
+  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('reservation').get();
+
+  //   for (var doc in querySnapshot.docs) {
+  //     DateTime eventDate = DateTime.fromMillisecondsSinceEpoch(doc['start_time'].seconds * 1000);
+  //     String eventName = doc['name'];
+  //     Event event = Event(eventName);
+  //     if (events2[eventDate] == null) events2[eventDate] = [];
+  //     events2[eventDate]!.add(event);
+  //   }
+  // }
+
   Future<void> _initializeEvents() async {
     events2 = await returnEvents();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
     if (_selectedEvents.value.isEmpty) {
-      _selectedEvents.value.add(Event('해당 날짜에 예약내역이 없습니다'));
+      _selectedEvents.value.add(Event(content: '해당 날짜에 예약내역이 없습니다'));
     }
   }
 
@@ -91,7 +105,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
       _selectedEvents.value = _getEventsForDay(selectedDay);
       if (_selectedEvents.value.isEmpty) {
-        _selectedEvents.value.add(Event('해당 날짜에 예약내역이 없습니다'));
+        _selectedEvents.value.add(Event(content: '해당 날짜에 예약내역이 없습니다'));
       }
     }
   }
@@ -115,88 +129,116 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     }
   }
 
+  Future<void> _handleRefresh() async {
+    setState(() {
+      _initializeEvents();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width * 0.2,
-            child: NavigationBarWidget(),
-          ),
-
-          Column(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                color: Colors.white,
-                child: TableCalendar<Event>(
-                  firstDay: kFirstDay,
-                  lastDay: kLastDay,
-                  focusedDay: _focusedDay,
-                  availableCalendarFormats: {
-                    CalendarFormat.month: '달',
-                  },
-                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                  rangeStartDay: _rangeStart,
-                  rangeEndDay: _rangeEnd,
-                  calendarFormat: _calendarFormat,
-                  rangeSelectionMode: _rangeSelectionMode,
-                  eventLoader: _getEventsForDay,
-                  startingDayOfWeek: StartingDayOfWeek.monday,
-                  calendarStyle: CalendarStyle(
-                    outsideDaysVisible: false,
+    return SafeArea(
+      child: Scaffold(
+        body: Row(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width * 0.2,
+              child: NavigationBarWidget(),
+            ),
+    
+            RefreshIndicator(
+              onRefresh: _handleRefresh,
+              child: Column(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    color: Colors.white,
+                    child: TableCalendar<Event>(
+                      firstDay: kFirstDay,
+                      lastDay: kLastDay,
+                      focusedDay: _focusedDay,
+                      availableCalendarFormats: {
+                        CalendarFormat.month: '달',
+                      },
+                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                      rangeStartDay: _rangeStart,
+                      rangeEndDay: _rangeEnd,
+                      calendarFormat: _calendarFormat,
+                      rangeSelectionMode: _rangeSelectionMode,
+                      eventLoader: _getEventsForDay,
+                      startingDayOfWeek: StartingDayOfWeek.monday,
+                      calendarStyle: CalendarStyle(
+                        outsideDaysVisible: false,
+                      ),
+                      onDaySelected: _onDaySelected,
+                      onRangeSelected: _onRangeSelected,
+                      onFormatChanged: (format) {
+                        if (_calendarFormat != format) {
+                          setState(() {
+                            _calendarFormat = format;
+                          });
+                        }
+                      },
+                      onPageChanged: (focusedDay) {
+                        _focusedDay = focusedDay;
+                      },
+                    ),
                   ),
-                  onDaySelected: _onDaySelected,
-                  onRangeSelected: _onRangeSelected,
-                  onFormatChanged: (format) {
-                    if (_calendarFormat != format) {
-                      setState(() {
-                        _calendarFormat = format;
-                      });
-                    }
-                  },
-                  onPageChanged: (focusedDay) {
-                    _focusedDay = focusedDay;
-                  },
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  color: Colors.white,
-                  child: ValueListenableBuilder<List<Event>>(
-                    valueListenable: _selectedEvents,
-                    builder: (context, value, _) {
-                      return ListView.builder(
-                        itemCount: value.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 12.0,
-                              vertical: 4.0,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            child: ListTile(
-                              onTap: () {},
-                              title: Text('${value[index]}'),
-                            ),
+                  Expanded(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,                    
+                      color: Colors.white,
+                      child: ValueListenableBuilder<List<Event>>(
+                        valueListenable: _selectedEvents,
+                        builder: (context, value, _) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: value.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                  vertical: 4.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                // child: ListTile(                                
+                                //   onTap: () {},
+                                //   title: Text('${value[index]}'),
+                                // ),
+                                child: 
+                                value[index].content == '해당 날짜에 예약내역이 없습니다' ? ListTile(title: Text('해당 날짜에 예약내역이 없습니다')) :
+                                Column(
+                                  children: [
+                                    ListTile(
+                                      onTap: () {},
+                                      title: Text('${value[index].name}'),
+                                      subtitle: Text(DateFormat('HH:mm').format(DateTime.parse(value[index].start!)) + ' ~ ' + DateFormat('HH:mm').format(DateTime.parse(value[index].end!))),
+                                      trailing: Text('${value[index].phoneNumber}'),
+                                    ),
+                                    ListTile(
+                                      onTap: () {},
+                                      title: Text('${value[index].content}'), 
+                                      subtitle: Text('사용인원 : ${value[index].number}'),                                 
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -204,23 +246,44 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
 // Events Class and Function
 Future<Map<DateTime, List<Event>>> returnEvents() async {
-  Map<DateTime, List<Event>> eventsMap = {
-    DateTime(2023, 11, 20): [
-      const Event('Event A0'),
-      const Event('Event B0'),
-      const Event('Event C0'),
-    ],
-  };
+
+  // Map<DateTime, List<Event>> eventsMap = {
+  //   DateTime(2023, 11, 20): [
+  //     const Event('Event A0'),
+  //     const Event('Event B0'),
+  //     const Event('Event C0'),
+  //   ],
+  // };
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('reservation').get();
+  Map<DateTime, List<Event>> eventsMap = {};
+
+  print('querySnapshot.docs.length : ${querySnapshot.docs.length}');
+    for (var doc in querySnapshot.docs) {
+      DateTime originalDateTime = DateTime.fromMillisecondsSinceEpoch(doc['start_time'].seconds * 1000);
+      DateTime eventDate = DateTime(originalDateTime.year, originalDateTime.month, originalDateTime.day);
+      print('eventDate : $eventDate');
+      Event event = Event(name : doc['name'], content : doc['content'], phoneNumber : doc['phone_number'], start : doc['start_time'].toDate().toString(), end : doc['end_time'].toDate().toString(), number : doc['number']);
+      // if (events2[eventDate] == null) events2[eventDate] = [];
+      // events2[eventDate]!.add(event);
+        if (eventsMap[eventDate] == null) eventsMap[eventDate] = [];
+        eventsMap[eventDate]!.add(event);
+    }
   return eventsMap;
 }
 
 class Event {
-  final String title;
+  final String? name;
+  final String? content;
+  final String? phoneNumber;
+  final String? start;
+  final String? end;
+  final int? number;
 
-  const Event(this.title);
+  Event({this.name, this.content, this.phoneNumber, this.start, this.end, this.number});
+     
 
   @override
-  String toString() => title;
+  String toString() => content ?? "";
 }
 
 List<DateTime> daysInRange(DateTime first, DateTime last) {
