@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../components/navigation_bar_widget.dart';
 import '../utils/model_utils.dart';
 import 'userinfo_model.dart';
@@ -46,36 +45,54 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width * 0.8,
             padding: const EdgeInsets.all(10),
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'User ID',
-                  style: TextStyle(
+                  '이메일: ' + _model.email,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  'Email',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'sign out',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.blue,
-                  ),
-                ),
-                Text(
-                  'Reservation List',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                // reservation list from _model.reservationList() if it is not null
+                FutureBuilder(
+                  future: _model.reservationList(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<String>> snapshot) {
+                    if (snapshot.hasData) {
+                      return Center(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Card(
+                                child: ListTile(
+                                  title: Text(snapshot.data![index]),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Center(
+                        child: SizedBox(
+                          height: 100,
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: const Text(
+                            '예약 내역이 없습니다.',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             ),
