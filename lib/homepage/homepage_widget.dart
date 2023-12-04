@@ -223,12 +223,11 @@ Future<Map<DateTime, List<Event>>> returnEvents() async {
     DateTime startTime = reservationMap['start_time'].toDate();
     DateTime endTime = reservationMap['end_time'].toDate();
     String content = reservationMap['content'];
-    String name = reservationMap['name'];
     String number = reservationMap['number'].toString();
     DateTime date = DateTime(startTime.year, startTime.month, startTime.day);
 
     Event event = Event(
-        '예약자: $name\n연락처: $number\n내용: $content\n시작시간: ${startTime.hour}:${startTime.minute}\n종료시간: ${endTime.hour}:${endTime.minute}'
+        '연락처: $number\n내용: $content\n시작시간: ${startTime.hour}:${startTime.minute}\n종료시간: ${endTime.hour}:${endTime.minute}'
     );
 
     if (eventsMap.containsKey(date)) {
