@@ -9,6 +9,9 @@ import '/components/navigation_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // HomePage Widget
 class ReservationPageWidget extends StatefulWidget {
@@ -83,7 +86,7 @@ class _ReservationPageWidgetState extends State<ReservationPageWidget> {
                 const Padding(
                   padding: EdgeInsets.all(5),
                   child: Text(
-                    '시간 선택',
+                    '시작 시간 선택',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 24,
@@ -99,12 +102,35 @@ class _ReservationPageWidgetState extends State<ReservationPageWidget> {
                   mode: CupertinoTimerPickerMode.hm,
                   onTimerDurationChanged: (duration) {
                     setState(() {
-                      _model.selectedDay = DateTime(
+                      _model.selectedStartTime = DateTime(
                           _model.selectedDay!.year,
                           _model.selectedDay!.month,
                           _model.selectedDay!.day,
                           duration.inHours,
                           duration.inMinutes % 60);
+                    });
+                  },
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    '이용 시간 선택',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 24,
+                      color: Color(0xFF000000),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const Divider(
+                  thickness: 1,
+                ),
+                CupertinoTimerPicker(
+                  mode: CupertinoTimerPickerMode.hm,
+                  onTimerDurationChanged: (duration) {
+                    setState(() {
+                      _model.selectedDuration = duration;
                     });
                   },
                 ),
@@ -139,7 +165,22 @@ class _ReservationPageWidgetState extends State<ReservationPageWidget> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 0, 5, 10),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final user = FirebaseAuth.instance.currentUser;
+                      String userEmail = user!.email!;
+                      DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(userEmail);
+
+                      await FirebaseFirestore.instance.collection('reservation').add({
+                        'user': userRef,
+                        'content': _model.reasonController!.text,
+                        'end_time': Timestamp.fromDate(_model.selectedStartTime!.add(_model.selectedDuration!)),
+                        'start_time': Timestamp.fromDate(_model.selectedStartTime!),
+                        'name': user.displayName,
+                        'number': 1,
+                      });
+
+                      print("예약 완료");
+                    },
                     child: const Text('예약하기'),
                   ),
                 ),

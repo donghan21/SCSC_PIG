@@ -8,6 +8,8 @@ class ReservationPageModel extends Model {
   final unFocusNode = FocusNode();
 
   DateTime? selectedDay = DateTime.now();
+  DateTime? selectedStartTime = DateTime.now();
+  Duration? selectedDuration = const Duration(hours: 1);
   TextEditingController? reasonController;
 
   @override
