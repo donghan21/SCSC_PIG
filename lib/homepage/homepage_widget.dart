@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'homepage_model.dart';
 export 'homepage_model.dart';
 
@@ -10,8 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+
 
 // HomePage Widget
 class HomePageWidget extends StatefulWidget {
@@ -236,9 +240,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -246,7 +250,42 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
 // Events Class and Function
 Future<Map<DateTime, List<Event>>> returnEvents() async {
+  final reservationData = await FirebaseFirestore.instance
+      .collection('reservation')
+      .get()
+      .then((value) => value.docs);
 
+  // make event maps
+  Map<DateTime, List<Event>> eventsMap = {};
+  for (var i = 0; i < reservationData.length; i++) {
+    final reservation = reservationData[i];
+    Map<String, dynamic> reservationMap = reservation.data();
+
+    DateTime startTime = reservationMap['start_time'].toDate();
+    DateTime endTime = reservationMap['end_time'].toDate();
+    String content = reservationMap['content'];
+    String name = reservationMap['name'];
+    String number = reservationMap['number'].toString();
+    DateTime date = DateTime(startTime.year, startTime.month, startTime.day);
+
+    Event event = Event(
+        '예약자: $name\n연락처: $number\n내용: $content\n시작시간: ${startTime.hour}:${startTime.minute}\n종료시간: ${endTime.hour}:${endTime.minute}'
+    );
+
+    if (eventsMap.containsKey(date)) {
+      eventsMap[startTime]!.add(event);
+    } else {
+      eventsMap[startTime] = [event];
+    }
+  }
+
+  Map<DateTime, List<Event>> eventsMap2 = {
+    DateTime(2023, 11, 20): [
+      const Event('Event A0'),
+      const Event('Event B0'),
+      const Event('Event C0'),
+    ],
+  };
   // Map<DateTime, List<Event>> eventsMap = {
   //   DateTime(2023, 11, 20): [
   //     const Event('Event A0'),
