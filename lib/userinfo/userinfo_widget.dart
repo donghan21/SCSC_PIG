@@ -59,8 +59,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                 // reservation list from _model.reservationList() if it is not null
                 FutureBuilder(
                   future: _model.reservationList(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<String>> snapshot) {
+                  builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
                     if (snapshot.hasData) {
                       return Center(
                         child: SizedBox(

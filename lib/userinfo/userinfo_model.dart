@@ -7,8 +7,8 @@ class UserInfoModel extends Model {
   final unFocusNode = FocusNode();
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-
   String get email => firebaseAuth.currentUser!.email!;
+  String get emailForCheck => firebaseAuth.currentUser!.email! + ")";
   // get reservation list from firebase
 
   var db = FirebaseFirestore.instance;
@@ -17,8 +17,12 @@ class UserInfoModel extends Model {
     QuerySnapshot querySnapshot = await db.collection('reservation').get();
     List<String> reservationList = [];
     for (var doc in querySnapshot.docs) {
-      if (doc['user'] == email) {
-        reservationList.add(doc['start_time'] + '~' + doc['end_time']);
+      final data = doc.data() as Map<String, dynamic>;
+      String email2 = data['user'].toString().split('/')[1];
+      if (email2 == emailForCheck) {
+        DateTime start = data['start_time'].toDate();
+        DateTime end = data['end_time'].toDate();
+        reservationList.add(start.toString() + '~' + end.toString());
       }
     }
     return reservationList;
